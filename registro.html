@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UES CUSTOMS · Crear cuenta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600&family=Inter:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --bg:#0c1726; --card:#15243a; --line:#24374f; --fg:#e8eef7; --muted:#90a3bb;
+    --gold:#c8963e; --gold-dim:#8f6b2c; --ok:#3fa96a; --bad:#d4574f;
+    --display:'Oswald',system-ui,sans-serif; --body:'Inter',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;display:grid;place-items:center;background:var(--bg);
+       color:var(--fg);font-family:var(--body);padding:24px}
+  .card{width:100%;max-width:380px;background:var(--card);border:1px solid var(--line);
+        border-radius:4px;overflow:hidden}
+  .stripe{height:8px;background:repeating-linear-gradient(135deg,var(--gold) 0 14px,#1b2a40 14px 28px)}
+  .pad{padding:26px 24px 30px}
+  h1{font-family:var(--display);font-size:25px;letter-spacing:.04em;margin:0 0 4px;text-transform:uppercase}
+  .sub{color:var(--muted);font-size:13px;margin:0 0 22px}
+  h2{font-size:15px;font-weight:600;margin:0 0 18px}
+  label{display:block;font-size:12.5px;color:var(--muted);margin:0 0 6px}
+  .field{position:relative;margin-bottom:18px}
+  input{width:100%;padding:11px 62px 11px 12px;background:#0f1d30;border:1px solid var(--line);
+        border-radius:3px;color:var(--fg);font-size:14px;font-family:var(--body)}
+  input:focus{outline:2px solid var(--gold-dim);outline-offset:1px;border-color:var(--gold-dim)}
+  .toggle{position:absolute;right:8px;top:30px;background:none;border:0;color:var(--muted);
+          font-size:12px;cursor:pointer;padding:6px}
+  .toggle:hover{color:var(--fg)}
+  .meter{display:flex;gap:5px;margin:-10px 0 14px}
+  .meter i{flex:1;height:3px;background:var(--line);border-radius:2px}
+  .meter i.on{background:var(--gold)}
+  ul{list-style:none;padding:0;margin:0 0 20px;font-size:12.5px;color:var(--muted)}
+  ul li{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+  ul li::before{content:"";width:7px;height:7px;border-radius:50%;border:1px solid var(--line);flex:none}
+  ul li.ok{color:var(--fg)}
+  ul li.ok::before{background:var(--ok);border-color:var(--ok)}
+  button.save{width:100%;padding:12px;background:var(--gold);color:#171103;border:0;border-radius:3px;
+              font-size:14px;font-weight:600;font-family:var(--body);cursor:pointer}
+  button.save:disabled{background:var(--gold-dim);color:#2a2112;cursor:not-allowed;opacity:.7}
+  .msg{font-size:13px;line-height:1.5;padding:11px 12px;border-radius:3px;margin-bottom:18px;display:none}
+  .msg.show{display:block}
+  .msg.err{background:rgba(212,87,79,.12);border:1px solid rgba(212,87,79,.4);color:#f0a9a4}
+  .msg.good{background:rgba(63,169,106,.12);border:1px solid rgba(63,169,106,.4);color:#8fd9ae}
+  .foot{margin:18px 0 0;font-size:12.5px;color:var(--muted);text-align:center}
+  .foot a{color:var(--gold);text-decoration:none}
+  .foot a:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+<main class="card">
+  <div class="stripe"></div>
+  <div class="pad">
+    <h1>UES CUSTOMS</h1>
+    <p class="sub">Crea tu cuenta para empezar.</p>
+
+    <div id="msg" class="msg"></div>
+
+    <form id="form">
+      <h2>Registro</h2>
+
+      <div class="field">
+        <label for="nombre">Nombre completo</label>
+        <input id="nombre" type="text" autocomplete="name" required>
+      </div>
+
+      <div class="field">
+        <label for="email">Correo electrónico</label>
+        <input id="email" type="email" autocomplete="email" required>
+      </div>
+
+      <div class="field">
+        <label for="pass">Contraseña</label>
+        <input id="pass" type="password" autocomplete="new-password" required>
+        <button type="button" class="toggle" data-for="pass">Mostrar</button>
+      </div>
+      <div class="meter"><i></i><i></i><i></i><i></i></div>
+
+      <ul id="rules">
+        <li data-rule="len">Al menos 8 caracteres</li>
+        <li data-rule="case">Mayúsculas y minúsculas</li>
+        <li data-rule="num">Al menos un número</li>
+        <li data-rule="sym">Al menos un símbolo (por ejemplo ! # $)</li>
+      </ul>
+
+      <div class="field">
+        <label for="pass2">Confirmar contraseña</label>
+        <input id="pass2" type="password" autocomplete="new-password" required>
+        <button type="button" class="toggle" data-for="pass2">Mostrar</button>
+      </div>
+
+      <button class="save" id="save" type="submit" disabled>Crear cuenta</button>
+    </form>
+
+    <p class="foot" id="foot">¿Olvidaste tu contraseña?
+      <a href="https://reset-password-delta-lilac.vercel.app">Recupérala aquí</a>
+    </p>
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+  // ---- Configuración del proyecto ----------------------------------------
+  const SUPABASE_URL = "https://ezczojwgfmgupobuwzxn.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_vEhTM8QF2q0qCgzHPZRtYw_uqt2QW50";
+  // ------------------------------------------------------------------------
+
+  const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+    auth: { detectSessionInUrl: false, persistSession: false }
+  });
+
+  const form  = document.getElementById("form");
+  const foot  = document.getElementById("foot");
+  const msg   = document.getElementById("msg");
+  const nombre= document.getElementById("nombre");
+  const email = document.getElementById("email");
+  const pass  = document.getElementById("pass");
+  const pass2 = document.getElementById("pass2");
+  const save  = document.getElementById("save");
+  const bars  = document.querySelectorAll(".meter i");
+  const rules = document.querySelectorAll("#rules li");
+
+  function say(text, kind){
+    msg.textContent = text;
+    msg.className = "msg show " + kind;
+  }
+
+  // 1. Si llega desde el enlace de confirmación del correo, activar la cuenta
+  (async function start(){
+    const q    = new URLSearchParams(location.search);
+    const hash = new URLSearchParams(location.hash.slice(1));
+
+    const problema = q.get("error_description") || hash.get("error_description");
+    if (problema) {
+      say("Este enlace ya no sirve: " + problema + ". Regístrate de nuevo o pide otro correo.", "err");
+      return;
+    }
+
+    const tokenHash = q.get("token_hash") || hash.get("token_hash");
+    const tipo = q.get("type") || hash.get("type");
+    if (!tokenHash || tipo !== "signup") return;   // registro normal
+
+    form.hidden = true;
+    foot.hidden = true;
+    const { error } = await db.auth.verifyOtp({ type: "signup", token_hash: tokenHash });
+
+    if (error) {
+      say("No pudimos confirmar la cuenta: " + error.message, "err");
+      form.hidden = false;
+      foot.hidden = false;
+      return;
+    }
+    await db.auth.signOut();
+    history.replaceState(null, "", location.pathname);
+    say("Tu cuenta quedó confirmada. Ya puedes iniciar sesión en la app.", "good");
+  })();
+
+  // 2. Reglas de la contraseña
+  function revisar(){
+    const v = pass.value;
+    const estado = {
+      len:  v.length >= 8,
+      case: /[a-z]/.test(v) && /[A-Z]/.test(v),
+      num:  /\d/.test(v),
+      sym:  /[^A-Za-z0-9]/.test(v)
+    };
+    let fuerza = 0;
+    rules.forEach(li => {
+      const ok = estado[li.dataset.rule];
+      li.classList.toggle("ok", ok);
+      if (ok) fuerza++;
+    });
+    bars.forEach((b,i) => b.classList.toggle("on", i < fuerza));
+    save.disabled = !(fuerza === 4 && v === pass2.value && v.length > 0
+                      && email.value.trim() !== "" && nombre.value.trim() !== "");
+  }
+  [nombre, email, pass, pass2].forEach(c => c.addEventListener("input", revisar));
+
+  document.querySelectorAll(".toggle").forEach(b => {
+    b.addEventListener("click", () => {
+      const campo = document.getElementById(b.dataset.for);
+      const visible = campo.type === "text";
+      campo.type = visible ? "password" : "text";
+      b.textContent = visible ? "Mostrar" : "Ocultar";
+    });
+  });
+
+  // 3. Crear la cuenta
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (pass.value !== pass2.value) { say("Las contraseñas no coinciden.", "err"); return; }
+    save.disabled = true;
+    save.textContent = "Creando cuenta...";
+
+    const { data, error } = await db.auth.signUp({
+      email: email.value.trim(),
+      password: pass.value,
+      options: { data: { full_name: nombre.value.trim() } }
+    });
+
+    if (error) {
+      const texto = /already registered|already exists/i.test(error.message)
+        ? "Ese correo ya tiene una cuenta. Intenta iniciar sesión o recuperar la contraseña."
+        : "No se pudo crear la cuenta: " + error.message;
+      say(texto, "err");
+      save.disabled = false;
+      save.textContent = "Crear cuenta";
+      return;
+    }
+
+    form.hidden = true;
+    if (data.session) {
+      say("Cuenta creada. Ya puedes iniciar sesión en la app.", "good");
+    } else {
+      say("Cuenta creada. Te enviamos un correo a " + email.value.trim() +
+          " para confirmarla. Si no aparece, revisa la carpeta de spam.", "good");
+    }
+  });
+</script>
+</body>
+</html>
